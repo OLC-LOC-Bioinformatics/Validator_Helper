@@ -8,6 +8,7 @@ setup(
     packages=find_packages(),
     author="Andrew Low",
     author_email="andrew.low@canada.ca",
-    url="https://github.com/lowandrew/Validator_Kelper",
-    install_requires=['pandas'],
+    url="https://github.com/lowandrew/Validator_Helper",
+    install_requires=['pandas',
+                      'pytest'],
 )
