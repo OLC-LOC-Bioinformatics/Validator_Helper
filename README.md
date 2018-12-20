@@ -5,7 +5,17 @@
 
 Use this package to help validate that CSVs outputted by your pipelines match up with what you think they should.
 
-Here's how to use this. Assume we have a pipeline that outputs a list of people, their ages, and their favourite colors.
+### Installation
+
+To install, use pip/pip3:
+
+```
+pip install validator_helper
+```
+
+### Usage
+
+Here's how to use this. Assume we have a list of people, their ages, and their favourite colors in CSV format.
 The reference data set looks like this:
 
 ```
