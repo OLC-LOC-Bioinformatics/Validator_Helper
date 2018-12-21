@@ -81,3 +81,24 @@ def test_testset_remove_sample():
     assert validator.check_samples_present() is False
     assert validator.check_columns_match() is True
 
+
+def test_na_values():
+    validator = validate.Validator(reference_csv='tests/ref_csv.csv',
+                                   test_csv='tests/test_na_values.csv',
+                                   column_list=column_list,
+                                   identifying_column='Name')
+    assert validator.all_test_columns_in_ref_and_test() is True
+    assert validator.same_columns_in_ref_and_test() is True
+    assert validator.check_samples_present() is True
+    assert validator.check_columns_match() is False
+
+
+def test_ref_and_test_have_na():
+    validator = validate.Validator(reference_csv='tests/test_na_values.csv',
+                                   test_csv='tests/test_na_values.csv',
+                                   column_list=column_list,
+                                   identifying_column='Name')
+    assert validator.all_test_columns_in_ref_and_test() is True
+    assert validator.same_columns_in_ref_and_test() is True
+    assert validator.check_samples_present() is True
+    assert validator.check_columns_match() is True

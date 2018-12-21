@@ -55,7 +55,9 @@ class Validator(object):
             for refindex, refrow in self.reference_csv_df.iterrows():
                 if testrow[self.identifying_column] == refrow[self.identifying_column]:
                     for column in self.column_list:
-                        if column.column_type == 'Categorical':
+                        if pd.isna(testrow[column.name]) and pd.isna(refrow[column.name]):
+                            pass  # Equality doesn't work for na values in pandas, so have to check this first.
+                        elif column.column_type == 'Categorical':
                             if testrow[column.name] != refrow[column.name]:
                                 logging.warning('Attribute {} does not match for sample {}'.format(column.name,
                                                                                                    testrow[self.identifying_column]))
