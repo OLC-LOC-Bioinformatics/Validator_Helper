@@ -1,7 +1,39 @@
 #!/usr/bin/env python
 
 import pandas as pd
+import numpy as np
 import logging
+
+
+def find_all_columns(csv_file, columns_to_exclude, range_fraction=0.1):
+    """
+    Sometimes, csv files have way too many columns to make you want to list them all. This method will create
+    a list of column objects for you, excluding whatever columns are in the columns_to_exclude_list.
+    If columns are numeric/ranges acceptable range is set to 10 percent (range_fraction, modify if you want) of the
+    average of the field. If you need more fine-grained control over this,
+    :param csv_file: Full path to csv file.
+    :param columns_to_exclude: List of column headers you DO NOT want Column objects created for.
+    :param range_fraction: How much numeric columns can vary by, as a fraction of the mean of the column
+    :return: List of column objects to be used by a Validator
+    """
+    column_list = list()
+    df = pd.read_csv(csv_file)
+    column_headers = list(df.columns)
+    for column in column_headers:
+        if column not in columns_to_exclude:
+            # Check if column appears to be numeric
+            if np.issubdtype(df[column].dtype, np.number):
+                # Find average.
+                average_column_value = df[column].mean()
+                # Create column with acceptable range of plus/minus of range_fraction
+                acceptable_range = average_column_value * range_fraction
+                # Now finally create the column.
+                column_list.append(Column(name=column,
+                                          column_type='Range',
+                                          acceptable_range=acceptable_range))
+            else:
+                column_list.append(Column(name=column))
+    return column_list
 
 
 class Column(object):

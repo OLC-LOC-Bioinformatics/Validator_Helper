@@ -5,6 +5,45 @@ column_list.append(validate.Column('Age', column_type='Range', acceptable_range=
 column_list.append(validate.Column('Color'))
 
 
+def test_auto_column_find_everything_good():
+    columns = validate.find_all_columns(csv_file='tests/ref_csv.csv',
+                                        columns_to_exclude='Name')
+    validator = validate.Validator(reference_csv='tests/ref_csv.csv',
+                                   test_csv='tests/test_all_match.csv',
+                                   column_list=columns,
+                                   identifying_column='Name')
+    assert validator.all_test_columns_in_ref_and_test() is True
+    assert validator.same_columns_in_ref_and_test() is True
+    assert validator.check_samples_present() is True
+    assert validator.check_columns_match() is True
+
+
+def test_auto_column_find_acceptable_range():
+    columns = validate.find_all_columns(csv_file='tests/ref_csv.csv',
+                                        columns_to_exclude='Name')
+    validator = validate.Validator(reference_csv='tests/ref_csv.csv',
+                                   test_csv='tests/test_acceptable_range.csv',
+                                   column_list=columns,
+                                   identifying_column='Name')
+    assert validator.all_test_columns_in_ref_and_test() is True
+    assert validator.same_columns_in_ref_and_test() is True
+    assert validator.check_samples_present() is True
+    assert validator.check_columns_match() is True
+
+
+def test_auto_column_find_outside_range():
+    columns = validate.find_all_columns(csv_file='tests/ref_csv.csv',
+                                        columns_to_exclude='Name')
+    validator = validate.Validator(reference_csv='tests/ref_csv.csv',
+                                   test_csv='tests/test_outside_range.csv',
+                                   column_list=columns,
+                                   identifying_column='Name')
+    assert validator.all_test_columns_in_ref_and_test() is True
+    assert validator.same_columns_in_ref_and_test() is True
+    assert validator.check_samples_present() is True
+    assert validator.check_columns_match() is False
+
+
 def test_everything_matches():
     validator = validate.Validator(reference_csv='tests/ref_csv.csv',
                                    test_csv='tests/test_all_match.csv',

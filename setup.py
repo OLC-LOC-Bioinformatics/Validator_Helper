@@ -10,5 +10,6 @@ setup(
     author_email="andrew.low@canada.ca",
     url="https://github.com/lowandrew/Validator_Helper",
     install_requires=['pandas',
+                      'numpy',
                       'pytest'],
 )
