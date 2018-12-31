@@ -7,7 +7,7 @@ column_list.append(validate.Column('Color'))
 
 def test_auto_column_find_everything_good():
     columns = validate.find_all_columns(csv_file='tests/ref_csv.csv',
-                                        columns_to_exclude='Name')
+                                        columns_to_exclude=['Name'])
     validator = validate.Validator(reference_csv='tests/ref_csv.csv',
                                    test_csv='tests/test_all_match.csv',
                                    column_list=columns,
@@ -20,7 +20,7 @@ def test_auto_column_find_everything_good():
 
 def test_auto_column_find_acceptable_range():
     columns = validate.find_all_columns(csv_file='tests/ref_csv.csv',
-                                        columns_to_exclude='Name')
+                                        columns_to_exclude=['Name'])
     validator = validate.Validator(reference_csv='tests/ref_csv.csv',
                                    test_csv='tests/test_acceptable_range.csv',
                                    column_list=columns,
@@ -33,7 +33,7 @@ def test_auto_column_find_acceptable_range():
 
 def test_auto_column_find_outside_range():
     columns = validate.find_all_columns(csv_file='tests/ref_csv.csv',
-                                        columns_to_exclude='Name')
+                                        columns_to_exclude=['Name'])
     validator = validate.Validator(reference_csv='tests/ref_csv.csv',
                                    test_csv='tests/test_outside_range.csv',
                                    column_list=columns,
