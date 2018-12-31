@@ -1,7 +1,7 @@
 # Validator Helper
 
 [![Build status](https://travis-ci.org/lowandrew/Validator_Helper.svg?master)](https://travis-ci.org/lowandrew)
-[![PyPI version](https://badge.fury.io/py/validator_helper.svg)](https://badge.fury.io/py/validator_helper)
+[![PyPI version](https://badge.fury.io/py/validator-helper.svg)](https://badge.fury.io/py/validator_helper)
 
 Use this package to help validate that CSVs outputted by your pipelines match up with what you think they should.
 
@@ -46,6 +46,13 @@ column_two = validate.Column(name='Age', column_type='Range', acceptable_range=2
 
 # Now put those columns into a list that will get passed to a Validator object.
 column_list = [column_one, column_two]
+
+# Have a lot of columns in your CSV and don't want to manually create objects for all of them?
+# Use the validate.find_all_columns to make a list.
+
+# Exclude the identifying_column and any other you don't want with a columns_to_exclude list.
+# Set acceptable_range for numeric columns - setting to 0.1 will allow acceptable ranges of +/- 10 percent of the column average.
+column_list = validate.find_all_columns(csv_file='/path/to/reference.csv', columns_to_exclude=['Name'], range_fraction=0.1)
 
 # To actually validate the data, create a Validator object. Put whatever column is the unique
 # identifier (in this case, Name) as identifying_column
