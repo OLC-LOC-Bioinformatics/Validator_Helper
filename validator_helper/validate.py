@@ -68,6 +68,15 @@ class Validator(object):
         self.reference_headers = list(self.reference_csv_df.columns)
         self.test_headers = list(self.test_csv_df.columns)
 
+    def remove_duplicate_header_rows(self):
+        """
+        Some genesippr reports (specifically mlst and rMLST) have multiple header-ish rows, which messes everything up.
+        This will remove those rows from the df so that other methods can actually work.
+        :return:
+        """
+        self.reference_csv_df = self.reference_csv_df[~self.reference_csv_df[self.identifying_column].isin([self.identifying_column])]
+        self.test_csv_df = self.test_csv_df[~self.test_csv_df[self.identifying_column].isin([self.identifying_column])]
+
     def same_columns_in_ref_and_test(self):
         if set(self.reference_headers) != set(self.test_headers):
             return False
