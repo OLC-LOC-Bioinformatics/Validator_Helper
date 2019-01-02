@@ -36,12 +36,27 @@ def find_all_columns(csv_file, columns_to_exclude, range_fraction=0.1):
     return column_list
 
 
+def percent_depth_columns(csv_file, columns_to_exclude, percent_range, depth_range):
+    column_list = list()
+    df = pd.read_csv(csv_file)
+    column_headers = list(df.columns)
+    for column in column_headers:
+        if column not in columns_to_exclude:
+            column_list.append(Column(name=column,
+                                      column_type='Percent_Depth',
+                                      percent_range=percent_range,
+                                      depth_range=depth_range))
+    return column_list
+
+
 class Column(object):
 
-    def __init__(self, name, column_type='Categorical', acceptable_range=None):
+    def __init__(self, name, column_type='Categorical', acceptable_range=None, percent_range=None, depth_range=None):
         self.name = name
         self.column_type = column_type
         self.acceptable_range = acceptable_range
+        self.percent_range = percent_range
+        self.depth_range = depth_range
 
 
 class Validator(object):
@@ -100,6 +115,24 @@ class Validator(object):
                             if not lower_bound <= float(testrow[column.name]) <= upper_bound:
                                 logging.warning('Attribute {} is out of range for sample {}'.format(column.name,
                                                                                                     testrow[self.identifying_column]))
+                                columns_match = False
+
+                        elif column.column_type == 'Percent_Depth':
+                            test_percent = float(testrow[column.name].split()[0].replace('%', ''))
+                            test_depth = float(testrow[column.name].split()[1].replace('(', ''))
+                            ref_percent = float(refrow[column.name].split()[0].replace('%', ''))
+                            ref_depth = float(refrow[column.name].split()[1].replace('(', ''))
+                            upper_percent_bound = ref_percent + column.percent_range
+                            lower_percent_bound = ref_percent - column.percent_range
+                            upper_depth_bound = ref_depth + column.depth_range
+                            lower_depth_bound = ref_depth - column.depth_range
+                            if not lower_depth_bound <= test_depth <= upper_depth_bound:
+                                logging.warning('Depth is out of range for column {} for sample {}'.format(column.name,
+                                                                                                           testrow[self.identifying_column]))
+                                columns_match = False
+                            if not lower_percent_bound <= test_percent <= upper_percent_bound:
+                                logging.warning('Percent is out of range for column {} for sample {}'.format(column.name,
+                                                                                                             testrow[self.identifying_column]))
                                 columns_match = False
         return columns_match
 

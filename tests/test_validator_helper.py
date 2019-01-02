@@ -141,3 +141,33 @@ def test_ref_and_test_have_na():
     assert validator.same_columns_in_ref_and_test() is True
     assert validator.check_samples_present() is True
     assert validator.check_columns_match() is True
+
+
+def test_percent_depth_acceptable_range():
+    columns = validate.percent_depth_columns(csv_file='tests/ref_genesippr.csv',
+                                             columns_to_exclude=['Strain', 'Genus'],
+                                             percent_range=2,
+                                             depth_range=5)
+    validator = validate.Validator(reference_csv='tests/ref_genesippr.csv',
+                                   test_csv='tests/test_good_genesippr.csv',
+                                   column_list=columns,
+                                   identifying_column='Strain')
+    assert validator.all_test_columns_in_ref_and_test() is True
+    assert validator.same_columns_in_ref_and_test() is True
+    assert validator.check_samples_present() is True
+    assert validator.check_columns_match() is True
+
+
+def test_percent_depth_outside_range():
+    columns = validate.percent_depth_columns(csv_file='tests/ref_genesippr.csv',
+                                             columns_to_exclude=['Strain', 'Genus'],
+                                             percent_range=2,
+                                             depth_range=5)
+    validator = validate.Validator(reference_csv='tests/ref_genesippr.csv',
+                                   test_csv='tests/test_bad_genesippr.csv',
+                                   column_list=columns,
+                                   identifying_column='Strain')
+    assert validator.all_test_columns_in_ref_and_test() is True
+    assert validator.same_columns_in_ref_and_test() is True
+    assert validator.check_samples_present() is True
+    assert validator.check_columns_match() is False
