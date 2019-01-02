@@ -171,3 +171,53 @@ def test_percent_depth_outside_range():
     assert validator.same_columns_in_ref_and_test() is True
     assert validator.check_samples_present() is True
     assert validator.check_columns_match() is False
+
+
+def test_resfinder_stuff_good():
+    columns = validate.find_all_columns(csv_file='tests/resfinder_ref.csv',
+                                        columns_to_exclude=['Strain'])
+    validator = validate.Validator(reference_csv='tests/resfinder_ref.csv',
+                                   test_csv='tests/resfinder_good.csv',
+                                   column_list=columns,
+                                   identifying_column='Strain')
+    assert validator.check_resfinderesque_output() is True
+
+
+def test_resfinder_unmatching_categorical():
+    columns = validate.find_all_columns(csv_file='tests/resfinder_ref.csv',
+                                        columns_to_exclude=['Strain'])
+    validator = validate.Validator(reference_csv='tests/resfinder_ref.csv',
+                                   test_csv='tests/resfinder_different_categorical.csv',
+                                   column_list=columns,
+                                   identifying_column='Strain')
+    assert validator.check_resfinderesque_output() is False
+
+
+def test_resfinder_outside_range():
+    columns = validate.find_all_columns(csv_file='tests/resfinder_ref.csv',
+                                        columns_to_exclude=['Strain'])
+    validator = validate.Validator(reference_csv='tests/resfinder_ref.csv',
+                                   test_csv='tests/resfinder_outside_range.csv',
+                                   column_list=columns,
+                                   identifying_column='Strain')
+    assert validator.check_resfinderesque_output() is False
+
+
+def test_resfinder_missing_sample():
+    columns = validate.find_all_columns(csv_file='tests/resfinder_ref.csv',
+                                        columns_to_exclude=['Strain'])
+    validator = validate.Validator(reference_csv='tests/resfinder_ref.csv',
+                                   test_csv='tests/resfinder_missing_sample.csv',
+                                   column_list=columns,
+                                   identifying_column='Strain')
+    assert validator.check_resfinderesque_output() is False
+
+
+def test_resfinder_missing_sample_entry():
+    columns = validate.find_all_columns(csv_file='tests/resfinder_ref.csv',
+                                        columns_to_exclude=['Strain'])
+    validator = validate.Validator(reference_csv='tests/resfinder_ref.csv',
+                                   test_csv='tests/resfinder_missing_sample_entry.csv',
+                                   column_list=columns,
+                                   identifying_column='Strain')
+    assert validator.check_resfinderesque_output() is False

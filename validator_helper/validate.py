@@ -136,5 +136,101 @@ class Validator(object):
                                 columns_match = False
         return columns_match
 
+    def get_resfinderesque_dictionaries(self):
+        current_id = '-999999999'
+        # Test row dictionary is a dict, where key is an ID. Value for each ID is a list, with each index in the list as
+        # a dictionary with column name as key and column value as value
+        test_row_dict = dict()
+        for testindex, testrow in self.test_csv_df.iterrows():
+            # Check if current ID is none or equal to previous ID. If so, continue using that ID.
+            # Otherwise, update the current ID to whatever it is.
+            if testrow[self.identifying_column] == current_id or pd.isna(testrow[self.identifying_column]):
+                if testrow[self.identifying_column] not in test_row_dict:
+                    test_row_dict[testrow[self.identifying_column]] = list()
+            else:
+                current_id = testrow[self.identifying_column]
+                if testrow[self.identifying_column] not in test_row_dict:
+                    test_row_dict[testrow[self.identifying_column]] = list()
+            # Now iterate through columns to create necessary dictionary.
+            dict_to_append = dict()
+            for column in self.column_list:
+                dict_to_append[column.name] = testrow[column.name]
+            test_row_dict[testrow[self.identifying_column]].append(dict_to_append)
 
+        # Repeat process with reference info
+        current_id = '-999999999'
+        ref_row_dict = dict()
+        for refindex, refrow in self.reference_csv_df.iterrows():
+            # Check if current ID is none or equal to previous ID. If so, continue using that ID.
+            # Otherwise, update the current ID to whatever it is.
+            if refrow[self.identifying_column] == current_id or pd.isna(refrow[self.identifying_column]):
+                if refrow[self.identifying_column] not in ref_row_dict:
+                    ref_row_dict[refrow[self.identifying_column]] = list()
+            else:
+                current_id = refrow[self.identifying_column]
+                if refrow[self.identifying_column] not in ref_row_dict:
+                    ref_row_dict[refrow[self.identifying_column]] = list()
+            # Now iterate through columns to create necessary dictionary.
+            dict_to_append = dict()
+            for column in self.column_list:
+                dict_to_append[column.name] = refrow[column.name]
+            ref_row_dict[refrow[self.identifying_column]].append(dict_to_append)
+        return test_row_dict, ref_row_dict
 
+    def check_resfinderesque_output(self):
+        """
+        Genesippr's resfinder/virulence modules don't play nice with the standard column matching used in
+        check_columns_match, which assumes that the identifying column only has one entry, whereas resfinder output
+        has many genes per strain, and each gene gets its own row.
+        To handle this, need to get all rows associated with each ID, and then 1) check that each ID has same number
+        of entries in test and reference set and 2) sort the rows somehow in case they weren't already sorted, and then
+        do row by row comparisons
+        :return:
+        """
+        # First, get dictionaries. Each dict has identifying column names as keys, and then has a list as the value
+        # for each. Each entry in each list is a dictionary where keys are column headers, and values are the column
+        # values
+        test_row_dict, ref_row_dict = self.get_resfinderesque_dictionaries()
+        checks_pass = True
+        # Now check that all IDs are present in both test and reference.
+        for identifier in test_row_dict:
+            if identifier not in ref_row_dict:
+                logging.warning('Identifier {} found in test but not reference.'.format(identifier))
+                checks_pass = False
+        for identifier in ref_row_dict:
+            if identifier not in test_row_dict:
+                logging.warning('Identifier {} found in reference but not test.'.format(identifier))
+                checks_pass = False
+        if checks_pass is False:
+            return False
+
+        # With that checked, check that each identifier has the same number of rows
+        for identifier in test_row_dict:
+            if len(test_row_dict[identifier]) != len(ref_row_dict[identifier]):
+                logging.warning('Found {} entries in test set, but {} entries in reference set for {}'.format(len(test_row_dict[identifier]),
+                                                                                                              len(ref_row_dict[identifier]),
+                                                                                                              identifier))
+                checks_pass = False
+        if checks_pass is False:
+            return False
+
+        # Now, if all identifiers have been found and the same number of identifiers are present for both ref and test,
+        # check that the values actually work out.
+        for identifier in test_row_dict:
+            for i in range(len(test_row_dict[identifier])):
+                for column in self.column_list:
+                    if pd.isna(test_row_dict[identifier][i][column.name]) and pd.isna(ref_row_dict[identifier][i][column.name]):
+                        pass  # Equality doesn't work for na values in pandas, so have to check this first.
+                    elif column.column_type == 'Categorical':
+                        if test_row_dict[identifier][i][column.name] != ref_row_dict[identifier][i][column.name]:
+                            logging.warning('Attribute {} does not match for identifier {}'.format(column.name,
+                                                                                                   identifier))
+                            checks_pass = False
+                    elif column.column_type == 'Range':
+                        lower_bound = ref_row_dict[identifier][i][column.name] - column.acceptable_range
+                        upper_bound = ref_row_dict[identifier][i][column.name] + column.acceptable_range
+                        if not lower_bound <= test_row_dict[identifier][i][column.name] <= upper_bound:
+                            logging.warning('Attribute {} is out of range for sample {}'.format(column.name, identifier))
+                            checks_pass = False
+
+        return checks_pass
