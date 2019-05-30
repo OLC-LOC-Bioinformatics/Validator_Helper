@@ -173,6 +173,16 @@ def test_percent_depth_outside_range():
     assert validator.check_columns_match() is False
 
 
+def test_resfinder_new_format():
+    columns = validate.find_all_columns(csv_file='tests/resfinder_ref.csv',
+                                        columns_to_exclude=['Strain'])
+    validator = validate.Validator(reference_csv='tests/resfinder_ref.csv',
+                                   test_csv='tests/resfinder_good.csv',
+                                   column_list=columns,
+                                   identifying_column='Strain')
+    assert validator.check_resfinderesque_output(one_to_one=True) is True
+
+
 def test_resfinder_stuff_good():
     columns = validate.find_all_columns(csv_file='tests/resfinder_ref.csv',
                                         columns_to_exclude=['Strain'])
@@ -180,7 +190,7 @@ def test_resfinder_stuff_good():
                                    test_csv='tests/resfinder_good.csv',
                                    column_list=columns,
                                    identifying_column='Strain')
-    assert validator.check_resfinderesque_output() is True
+    assert validator.check_resfinderesque_output()
 
 
 def test_resfinder_unmatching_categorical():
@@ -190,7 +200,7 @@ def test_resfinder_unmatching_categorical():
                                    test_csv='tests/resfinder_different_categorical.csv',
                                    column_list=columns,
                                    identifying_column='Strain')
-    assert validator.check_resfinderesque_output() is False
+    assert validator.check_resfinderesque_output(one_to_one=True) is False
 
 
 def test_resfinder_outside_range():
@@ -200,7 +210,7 @@ def test_resfinder_outside_range():
                                    test_csv='tests/resfinder_outside_range.csv',
                                    column_list=columns,
                                    identifying_column='Strain')
-    assert validator.check_resfinderesque_output() is False
+    assert validator.check_resfinderesque_output(one_to_one=True) is False
 
 
 def test_resfinder_missing_sample():
@@ -210,7 +220,7 @@ def test_resfinder_missing_sample():
                                    test_csv='tests/resfinder_missing_sample.csv',
                                    column_list=columns,
                                    identifying_column='Strain')
-    assert validator.check_resfinderesque_output() is False
+    assert validator.check_resfinderesque_output(one_to_one=True) is False
 
 
 def test_resfinder_missing_sample_entry():
@@ -218,6 +228,16 @@ def test_resfinder_missing_sample_entry():
                                         columns_to_exclude=['Strain'])
     validator = validate.Validator(reference_csv='tests/resfinder_ref.csv',
                                    test_csv='tests/resfinder_missing_sample_entry.csv',
+                                   column_list=columns,
+                                   identifying_column='Strain')
+    assert validator.check_resfinderesque_output(one_to_one=True) is False
+
+
+def test_resfinder_different_allele():
+    columns = validate.find_all_columns(csv_file='tests/resfinder_ref.csv',
+                                        columns_to_exclude=['Strain'])
+    validator = validate.Validator(reference_csv='tests/resfinder_ref.csv',
+                                   test_csv='tests/resfinder_different_allele.csv',
                                    column_list=columns,
                                    identifying_column='Strain')
     assert validator.check_resfinderesque_output() is False

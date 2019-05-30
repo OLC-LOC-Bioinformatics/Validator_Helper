@@ -1,9 +1,9 @@
 Strain,Resistance,Gene,Allele,Accession,PercentIdentity,Length,FoldCoverage
 2013-SEQ-0132,aminoglycoside,aadA11,2,AJ567827,92.93,792,18.24
-,aminoglycoside,aadA12,1,AY665771,94.19,792,15.92
+,aminoglycoside,aadA12,2,AY665771,94.19,792,15.92
 ,aminoglycoside,aadA15,1,DQ393783,96.34,792,17.2
 ,aminoglycoside,aadA17,1,FJ460181,93.18,792,16.91
-,aminoglycoside,aadA1,3,JQ414041,99.66,792,19.74
+,aminoglycoside,aadA1,3,JQ414041,99.75,792,19.74
 ,aminoglycoside,aadA1,4,JQ480156,99.75,789,19.79
 ,aminoglycoside,aadA1,5,JX185132,99.75,792,19.74
 ,aminoglycoside,aadA1b,1,M95287,99.37,792,19.81
