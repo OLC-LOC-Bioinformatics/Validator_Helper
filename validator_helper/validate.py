@@ -1,5 +1,4 @@
-#!/usr/bin/env python
-
+#!/usr/bin/env python3
 import pandas as pd
 import numpy as np
 import logging
@@ -115,7 +114,6 @@ class Validator(object):
             for refindex, refrow in self.reference_csv_df.iterrows():
                 if testrow[self.identifying_column] == refrow[self.identifying_column]:
                     for column in self.column_list:
-                        # print(testrow[self.identifying_column], testrow[column.name], refrow[column.name])
                         if pd.isna(testrow[column.name]) and pd.isna(refrow[column.name]):
                             pass  # Equality doesn't work for na values in pandas, so have to check this first.
                         # Ensure that the value for the test and reference is not 'ND' before proceeding
