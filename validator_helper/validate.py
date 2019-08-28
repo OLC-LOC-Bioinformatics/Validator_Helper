@@ -253,7 +253,7 @@ class Validator(object):
             ref_row_dict[refrow[self.identifying_column]].append(dict_to_append)
         return test_row_dict, ref_row_dict
 
-    def check_resfinderesque_output(self, one_to_one=False):
+    def check_resfinderesque_output(self, one_to_one=False, check_rows=True):
         """
         Genesippr's resfinder/virulence modules don't play nice with the standard column matching used in
         check_columns_match, which assumes that the identifying column only has one entry, whereas resfinder output
@@ -284,13 +284,14 @@ class Validator(object):
             return False
 
         # With that checked, check that each identifier has the same number of rows
-        for identifier in test_row_dict:
-            if len(test_row_dict[identifier]) != len(ref_row_dict[identifier]):
-                logging.warning('Found {} entries in test set, but {} entries in reference set for {}'
-                                .format(len(test_row_dict[identifier]),
-                                        len(ref_row_dict[identifier]),
-                                        identifier))
-                checks_pass = False
+        if check_rows:
+            for identifier in test_row_dict:
+                if len(test_row_dict[identifier]) != len(ref_row_dict[identifier]):
+                    logging.warning('Found {} entries in test set, but {} entries in reference set for {}'
+                                    .format(len(test_row_dict[identifier]),
+                                            len(ref_row_dict[identifier]),
+                                            identifier))
+                    checks_pass = False
         if checks_pass is False:
             return False
 
