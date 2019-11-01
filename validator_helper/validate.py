@@ -121,9 +121,13 @@ class Validator(object):
                             pass
                         elif column.column_type == 'Categorical':
                             if testrow[column.name] != refrow[column.name]:
-                                logging.warning('Attribute {} does not match for sample {}'
-                                                .format(column.name,
-                                                        testrow[self.identifying_column]))
+                                logging.warning('Attribute {header} ({test}) does not match reference value ({ref}) '
+                                                'for sample {sample}'
+                                                .format(header=column.name,
+                                                        test=testrow[column.name],
+                                                        ref=refrow[column.name],
+                                                        sample=testrow[self.identifying_column]))
+                                print(column.name, testrow[column.name], refrow[column.name])
                                 columns_match = False
                         elif column.column_type == 'Range':
                             lower_bound = float(refrow[column.name]) - column.acceptable_range
@@ -305,8 +309,11 @@ class Validator(object):
                         pass  # Equality doesn't work for na values in pandas, so have to check this first.
                     elif column.column_type == 'Categorical':
                         if test_row_dict[identifier][i][column.name] != ref_row_dict[identifier][i][column.name]:
-                            logging.warning('Attribute {} does not match for identifier {}'.format(column.name,
-                                                                                                   identifier))
+                            logging.warning('Attribute {header} ({test}) does not match reference value ({ref}) '
+                                            'for sample {sample}'.format(header=column.name,
+                                                                         test=test_row_dict[identifier][i][column.name],
+                                                                         ref=ref_row_dict[identifier][i][column.name],
+                                                                         sample=identifier))
                             checks_pass = False
                     elif column.column_type == 'Range':
                         lower_bound = ref_row_dict[identifier][i][column.name] - column.acceptable_range

@@ -4,7 +4,7 @@ from setuptools import setup, find_packages
 
 setup(
     name="validator_helper",
-    version="0.0.8",
+    version="0.0.9",
     packages=find_packages(),
     author="Andrew Low",
     author_email="andrew.low@canada.ca",
